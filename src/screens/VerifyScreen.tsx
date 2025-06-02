@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
-import { View } from 'react-native';
-import { TextInput, Button, Text } from 'react-native-paper';
-import { verifySignature } from '../utils/crypto';
+import { View, StyleSheet } from 'react-native';
+import { Text, TextInput, Button } from 'react-native-paper';
+import { verifySignature } from '@/utils/crypto';
 
 export const VerifyScreen = () => {
   const [message, setMessage] = useState('');
@@ -17,47 +17,96 @@ export const VerifyScreen = () => {
   };
 
   return (
-    <View className="flex-1 p-4 bg-white">
-      <Text variant="headlineMedium" className="mb-5 text-center">Verify Signature</Text>
+    <View style={styles.container}>
+      <Text variant="headlineMedium" style={styles.title}>Verify Signature</Text>
 
       <TextInput
+        mode="outlined"
         label="Message"
         value={message}
         onChangeText={setMessage}
         multiline
         numberOfLines={4}
-        className="my-2"
+        style={styles.input}
       />
 
       <TextInput
+        mode="outlined"
         label="Public Key (base64)"
         value={publicKey}
         onChangeText={setPublicKey}
-        className="my-2"
+        style={styles.input}
       />
 
       <TextInput
+        mode="outlined"
         label="Signature (base64)"
         value={signature}
         onChangeText={setSignature}
-        className="my-2"
+        style={styles.input}
       />
 
-      <Button mode="contained" onPress={handleVerify} className="my-4">
+      <Button 
+        mode="contained"
+        onPress={handleVerify} 
+        style={styles.button}
+      >
         Verify
       </Button>
 
-      {isValid !== null && (
-        <View className={`mt-4 p-4 rounded-lg items-center ${
-          isValid ? 'bg-green-100' : 'bg-red-100'
-        }`}>
-          <Text className={`text-lg font-bold ${
-            isValid ? 'text-green-800' : 'text-red-800'
-          }`}>
+      {isValid !== null ? (
+        <View style={[
+          styles.resultCard,
+          isValid ? styles.successCard : styles.errorCard
+        ]}>
+          <Text style={[
+            styles.resultText,
+            isValid ? styles.successText : styles.errorText
+          ]}>
             {isValid ? 'Valid Signature' : 'Invalid Signature'}
           </Text>
         </View>
-      )}
+      ):null}
     </View>
   );
-}; 
+};
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: 'white',
+  },
+  title: {
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  input: {
+    marginVertical: 8,
+  },
+  button: {
+    marginVertical: 16,
+  },
+  resultCard: {
+    marginTop: 16,
+    padding: 16,
+    borderRadius: 8,
+    alignItems: 'center',
+  },
+  successCard: {
+    backgroundColor: '#dcfce7',
+  },
+  errorCard: {
+    backgroundColor: '#fee2e2',
+  },
+  resultText: {
+    fontSize: 18,
+    fontWeight: 'bold',
+  },
+  successText: {
+    color: '#166534',
+  },
+  errorText: {
+    color: '#991b1b',
+  },
+}); 

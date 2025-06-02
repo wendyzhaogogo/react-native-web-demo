@@ -1,11 +1,29 @@
 import { sha256 } from 'js-sha256';
 import * as tweetnacl from 'tweetnacl';
 
+// 工具函数：将 base64 字符串转换为 Uint8Array
+const base64ToUint8Array = (base64: string): Uint8Array => {
+  const binaryString = atob(base64);
+  const bytes = new Uint8Array(binaryString.length);
+  for (let i = 0; i < binaryString.length; i++) {
+    bytes[i] = binaryString.charCodeAt(i);
+  }
+  return bytes;
+};
+
+// 工具函数：将 Uint8Array 转换为 base64 字符串
+const uint8ArrayToBase64 = (bytes: Uint8Array): string => {
+  const binaryString = Array.from(bytes)
+    .map(byte => String.fromCharCode(byte))
+    .join('');
+  return btoa(binaryString);
+};
+
 export const generateKeyPair = async () => {
   const keyPair = tweetnacl.sign.keyPair();
   return {
-    privateKey: Buffer.from(keyPair.secretKey).toString('base64'),
-    publicKey: Buffer.from(keyPair.publicKey).toString('base64'),
+    privateKey: uint8ArrayToBase64(keyPair.secretKey),
+    publicKey: uint8ArrayToBase64(keyPair.publicKey),
   };
 };
 
@@ -14,13 +32,14 @@ export const hashMessage = (message: string): string => {
 };
 
 export const signMessage = async (message: string, privateKeyBase64: string): Promise<string> => {
-  const privateKey = Buffer.from(privateKeyBase64, 'base64');
+  const privateKey = base64ToUint8Array(privateKeyBase64);
   const messageHash = hashMessage(message);
+  const messageHashBytes = new TextEncoder().encode(messageHash);
   const signature = tweetnacl.sign.detached(
-    Buffer.from(messageHash),
+    messageHashBytes,
     privateKey
   );
-  return Buffer.from(signature).toString('base64');
+  return uint8ArrayToBase64(signature);
 };
 
 export const verifySignature = async (
@@ -29,11 +48,12 @@ export const verifySignature = async (
   publicKeyBase64: string
 ): Promise<boolean> => {
   try {
-    const publicKey = Buffer.from(publicKeyBase64, 'base64');
-    const signature = Buffer.from(signatureBase64, 'base64');
+    const publicKey = base64ToUint8Array(publicKeyBase64);
+    const signature = base64ToUint8Array(signatureBase64);
     const messageHash = hashMessage(message);
+    const messageHashBytes = new TextEncoder().encode(messageHash);
     return tweetnacl.sign.detached.verify(
-      Buffer.from(messageHash),
+      messageHashBytes,
       signature,
       publicKey
     );

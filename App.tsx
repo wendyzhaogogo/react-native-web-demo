@@ -20,7 +20,7 @@ export default function App() {
             initialRouteName="Sign"
             screenOptions={{
               headerStyle: {
-                backgroundColor: '#f4511e',
+                backgroundColor: '#6200ee',
               },
               headerTintColor: '#fff',
               headerTitleStyle: {
