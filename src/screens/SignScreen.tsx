@@ -7,7 +7,11 @@ import type { StackNavigationProp } from '@react-navigation/stack';
 
 type RootStackParamList = {
   Sign: undefined;
-  Verify: undefined;
+  Verify: {
+    message: string;
+    publicKey: string;
+    signature: string;
+  };
 };
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'Sign'>;
@@ -22,9 +26,13 @@ export const SignScreen = () => {
   const [copySuccess, setCopySuccess] = useState(false);
 
   const handleGenerateKeys = async () => {
-    const keys = await generateKeyPair();
-    setPrivateKey(keys.privateKey);
-    setPublicKey(keys.publicKey);
+    try {
+      const keys = await generateKeyPair();
+      setPrivateKey(keys.privateKey);
+      setPublicKey(keys.publicKey);
+    } catch (error) {
+      console.error('Failed to generate keys:', error);
+    }
   };
 
   const handleSign = async () => {
@@ -106,7 +114,11 @@ export const SignScreen = () => {
 
       <Button 
         mode="outlined"
-        onPress={() => navigation.navigate('Verify')}
+        onPress={() => navigation.navigate('Verify', {
+          message,
+          publicKey,
+          signature
+        })}
         style={styles.button}
       >
         Go to Verify

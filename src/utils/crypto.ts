@@ -1,5 +1,12 @@
 import { sha256 } from 'js-sha256';
 import * as tweetnacl from 'tweetnacl';
+import * as ExpoCrypto from 'expo-crypto';
+
+// 设置 tweetnacl 的随机数生成器
+tweetnacl.setPRNG(async function(x, n) {
+  const v = await ExpoCrypto.getRandomBytesAsync(n);
+  for (let i = 0; i < n; i++) x[i] = v[i];
+});
 
 // 工具函数：将 base64 字符串转换为 Uint8Array
 const base64ToUint8Array = (base64: string): Uint8Array => {
@@ -13,9 +20,7 @@ const base64ToUint8Array = (base64: string): Uint8Array => {
 
 // 工具函数：将 Uint8Array 转换为 base64 字符串
 const uint8ArrayToBase64 = (bytes: Uint8Array): string => {
-  const binaryString = Array.from(bytes)
-    .map(byte => String.fromCharCode(byte))
-    .join('');
+  const binaryString = String.fromCharCode.apply(null, Array.from(bytes));
   return btoa(binaryString);
 };
 

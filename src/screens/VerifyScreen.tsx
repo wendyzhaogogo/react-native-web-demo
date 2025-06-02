@@ -2,11 +2,25 @@ import React, { useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 import { Text, TextInput, Button } from 'react-native-paper';
 import { verifySignature } from '@/utils/crypto';
+import { RouteProp, useRoute } from '@react-navigation/native';
+import type { StackNavigationProp } from '@react-navigation/stack';
+
+type RootStackParamList = {
+  Sign: undefined;
+  Verify: {
+    message: string;
+    publicKey: string;
+    signature: string;
+  };
+};
+
+type VerifyScreenRouteProp = RouteProp<RootStackParamList, 'Verify'>;
 
 export const VerifyScreen = () => {
-  const [message, setMessage] = useState('');
-  const [publicKey, setPublicKey] = useState('');
-  const [signature, setSignature] = useState('');
+  const route = useRoute<VerifyScreenRouteProp>();
+  const [message, setMessage] = useState(route.params?.message || '');
+  const [publicKey, setPublicKey] = useState(route.params?.publicKey || '');
+  const [signature, setSignature] = useState(route.params?.signature || '');
   const [isValid, setIsValid] = useState<boolean | null>(null);
 
   const handleVerify = async () => {
