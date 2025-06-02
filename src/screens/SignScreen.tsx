@@ -4,6 +4,7 @@ import { Text, TextInput, Button, IconButton } from 'react-native-paper';
 import { generateKeyPair, hashMessage, signMessage } from '@/utils/crypto';
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
+import { CustomModal } from '../components/CustomModal';
 
 type RootStackParamList = {
   Sign: undefined;
@@ -25,6 +26,7 @@ export const SignScreen = () => {
   const [privateKey, setPrivateKey] = useState('');
   const [publicKey, setPublicKey] = useState('');
   const [copySuccess, setCopySuccess] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const handleGenerateKeys = async () => {
     try {
@@ -60,7 +62,7 @@ export const SignScreen = () => {
         <IconButton
           icon="account"
           size={24}
-          onPress={() => navigation.navigate('Profile')}
+          onPress={() => setModalVisible(true)}
           style={styles.profileButton}
         />
       </View>
@@ -131,6 +133,12 @@ export const SignScreen = () => {
       >
         Go to Verify
       </Button>
+      <CustomModal visible={modalVisible} onClose={() => setModalVisible(false)}>
+        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 16 }}>个人信息弹窗</Text>
+        <Button mode="contained" onPress={() => setModalVisible(false)}>
+          关闭
+        </Button>
+      </CustomModal>
     </View>
   );
 };
