@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Clipboard, StyleSheet } from 'react-native';
+import { View, Clipboard, StyleSheet, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Text, TextInput, Button, IconButton } from 'react-native-paper';
 import { generateKeyPair, hashMessage, signMessage } from '@/utils/crypto';
 import { useNavigation } from '@react-navigation/native';
@@ -56,90 +56,94 @@ export const SignScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <Text variant="headlineMedium" style={styles.title}>Sign Message</Text>
-        <IconButton
-          icon="account"
-          size={24}
-          onPress={() => setModalVisible(true)}
-          style={styles.profileButton}
-        />
-      </View>
-      
-      <Button 
-        mode="contained"
-        onPress={handleGenerateKeys} 
-        style={styles.button}
-      >
-        Generate New Keys
-      </Button>
-
-      {publicKey ? (
-        <View style={styles.card}>
-          <View style={styles.cardHeader}>
-            <Text variant="bodySmall" style={styles.label}>Public Key:</Text>
-            <IconButton
-              icon={copySuccess ? "check" : "content-copy"}
-              size={20}
-              onPress={handleCopyPublicKey}
-              style={[styles.iconButton, copySuccess && styles.successIconButton]}
-            />
-          </View>
-          <Text selectable style={styles.monoText}>{publicKey}</Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <Text variant="headlineMedium" style={styles.title}>Sign Message</Text>
+          <IconButton
+            icon="account"
+            size={24}
+            onPress={() => setModalVisible(true)}
+            style={styles.profileButton}
+          />
         </View>
-      ):null}
-
-      <TextInput
-        mode="outlined"
-        label="Message"
-        value={message}
-        onChangeText={setMessage}
-        multiline
-        numberOfLines={4}
-        style={styles.input}
-      />
-
-      <Button 
-        mode="contained"
-        onPress={handleSign} 
-        style={styles.button}
-      >
-        Hash + Sign
-      </Button>
-
-      {hash ? (
-        <View style={styles.card}>
-          <Text variant="bodySmall" style={styles.label}>Hash (SHA-256):</Text>
-          <Text selectable style={styles.monoText}>{hash}</Text>
-        </View>
-      ):null}
-
-      {signature ? (
-        <View style={styles.card}>
-          <Text variant="bodySmall" style={styles.label}>Signature (Ed25519):</Text>
-          <Text selectable style={styles.monoText}>{signature}</Text>
-        </View>
-      ):null}
-
-      <Button 
-        mode="outlined"
-        onPress={() => navigation.navigate('Verify', {
-          message,
-          publicKey,
-          signature
-        })}
-        style={styles.button}
-      >
-        Go to Verify
-      </Button>
-      <CustomModal visible={modalVisible} onClose={() => setModalVisible(false)}>
-        <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 16 }}>个人信息弹窗</Text>
-        <Button mode="contained" onPress={() => setModalVisible(false)}>
-          关闭
+        
+        <Button 
+          mode="contained"
+          onPress={handleGenerateKeys} 
+          style={styles.button}
+        >
+          Generate New Keys
         </Button>
-      </CustomModal>
-    </View>
+
+        {publicKey ? (
+          <View style={styles.card}>
+            <View style={styles.cardHeader}>
+              <Text variant="bodySmall" style={styles.label}>Public Key:</Text>
+              <IconButton
+                icon={copySuccess ? "check" : "content-copy"}
+                size={20}
+                onPress={handleCopyPublicKey}
+                style={[styles.iconButton, copySuccess && styles.successIconButton]}
+              />
+            </View>
+            <Text selectable style={styles.monoText}>{publicKey}</Text>
+          </View>
+        ):null}
+
+        <TextInput
+          mode="outlined"
+          label="Message"
+          value={message}
+          onChangeText={setMessage}
+          multiline
+          numberOfLines={4}
+          style={styles.input}
+          blurOnSubmit={true}
+          returnKeyType="done"
+        />
+
+        <Button 
+          mode="contained"
+          onPress={handleSign} 
+          style={styles.button}
+        >
+          Hash + Sign
+        </Button>
+
+        {hash ? (
+          <View style={styles.card}>
+            <Text variant="bodySmall" style={styles.label}>Hash (SHA-256):</Text>
+            <Text selectable style={styles.monoText}>{hash}</Text>
+          </View>
+        ):null}
+
+        {signature ? (
+          <View style={styles.card}>
+            <Text variant="bodySmall" style={styles.label}>Signature (Ed25519):</Text>
+            <Text selectable style={styles.monoText}>{signature}</Text>
+          </View>
+        ):null}
+
+        <Button 
+          mode="outlined"
+          onPress={() => navigation.navigate('Verify', {
+            message,
+            publicKey,
+            signature
+          })}
+          style={styles.button}
+        >
+          Go to Verify
+        </Button>
+        <CustomModal visible={modalVisible} onClose={() => setModalVisible(false)}>
+          <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 16 }}>个人信息弹窗</Text>
+          <Button mode="contained" onPress={() => setModalVisible(false)}>
+            关闭
+          </Button>
+        </CustomModal>
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 

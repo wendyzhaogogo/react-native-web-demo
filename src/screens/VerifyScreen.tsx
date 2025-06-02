@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Keyboard, TouchableWithoutFeedback } from 'react-native';
 import { Text, TextInput, Button } from 'react-native-paper';
 import { verifySignature } from '@/utils/crypto';
 import { RouteProp, useRoute } from '@react-navigation/native';
@@ -31,57 +31,67 @@ export const VerifyScreen = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text variant="headlineMedium" style={styles.title}>Verify Signature</Text>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <View style={styles.container}>
+        <Text variant="headlineMedium" style={styles.title}>Verify Signature</Text>
 
-      <TextInput
-        mode="outlined"
-        label="Message"
-        value={message}
-        onChangeText={setMessage}
-        multiline
-        numberOfLines={4}
-        style={styles.input}
-      />
+        <TextInput
+          mode="outlined"
+          label="Message"
+          value={message}
+          onChangeText={setMessage}
+          multiline
+          numberOfLines={4}
+          style={styles.input}
+          blurOnSubmit={true}
+          returnKeyType="done"
+        />
 
-      <TextInput
-        mode="outlined"
-        label="Public Key (base64)"
-        value={publicKey}
-        onChangeText={setPublicKey}
-        style={styles.input}
-      />
+        <TextInput
+          mode="outlined"
+          label="Public Key (base64)"
+          value={publicKey}
+          onChangeText={setPublicKey}
+          style={styles.input}
+          submitBehavior="blurAndSubmit"
+          returnKeyType="done"
+          multiline
+        />
 
-      <TextInput
-        mode="outlined"
-        label="Signature (base64)"
-        value={signature}
-        onChangeText={setSignature}
-        style={styles.input}
-      />
+        <TextInput
+          mode="outlined"
+          label="Signature (base64)"
+          value={signature}
+          onChangeText={setSignature}
+          style={styles.input}
+          submitBehavior="blurAndSubmit"
+          returnKeyType="done"
+          multiline
+        />
 
-      <Button 
-        mode="contained"
-        onPress={handleVerify} 
-        style={styles.button}
-      >
-        Verify
-      </Button>
+        <Button 
+          mode="contained"
+          onPress={handleVerify} 
+          style={styles.button}
+        >
+          Verify
+        </Button>
 
-      {isValid !== null ? (
-        <View style={[
-          styles.resultCard,
-          isValid ? styles.successCard : styles.errorCard
-        ]}>
-          <Text style={[
-            styles.resultText,
-            isValid ? styles.successText : styles.errorText
+        {isValid !== null ? (
+          <View style={[
+            styles.resultCard,
+            isValid ? styles.successCard : styles.errorCard
           ]}>
-            {isValid ? 'Valid Signature' : 'Invalid Signature'}
-          </Text>
-        </View>
-      ):null}
-    </View>
+            <Text style={[
+              styles.resultText,
+              isValid ? styles.successText : styles.errorText
+            ]}>
+              {isValid ? 'Valid Signature' : 'Invalid Signature'}
+            </Text>
+          </View>
+        ):null}
+      </View>
+    </TouchableWithoutFeedback>
   );
 };
 
