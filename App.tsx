@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { SignScreen } from './src/screens/SignScreen';
 import { VerifyScreen } from './src/screens/VerifyScreen';
+import { ProfileScreen } from './src/screens/ProfileScreen';
 import { enableScreens } from 'react-native-screens';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 
@@ -37,6 +38,16 @@ export default function App() {
               name="Verify" 
               component={VerifyScreen}
               options={{ title: 'Verify Signature' }}
+            />
+            <Stack.Screen 
+              name="Profile" 
+              component={ProfileScreen}
+              options={{ 
+                title: 'Profile',
+                presentation: 'modal',
+                animation:'default',
+                headerShown: false,
+              }}
             />
           </Stack.Navigator>
         </NavigationContainer>

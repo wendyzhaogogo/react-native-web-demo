@@ -12,6 +12,7 @@ type RootStackParamList = {
     publicKey: string;
     signature: string;
   };
+  Profile: undefined;
 };
 
 type NavigationProp = StackNavigationProp<RootStackParamList, 'Sign'>;
@@ -50,12 +51,19 @@ export const SignScreen = () => {
     
     await Clipboard.setString(publicKey);
     setCopySuccess(true);
-    setTimeout(() => setCopySuccess(false), 2000);
   };
 
   return (
     <View style={styles.container}>
-      <Text variant="headlineMedium" style={styles.title}>Sign Message</Text>
+      <View style={styles.header}>
+        <Text variant="headlineMedium" style={styles.title}>Sign Message</Text>
+        <IconButton
+          icon="account"
+          size={24}
+          onPress={() => navigation.navigate('Profile')}
+          style={styles.profileButton}
+        />
+      </View>
       
       <Button 
         mode="contained"
@@ -133,9 +141,18 @@ const styles = StyleSheet.create({
     padding: 16,
     backgroundColor: 'white',
   },
-  title: {
-    textAlign: 'center',
+  header: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     marginBottom: 20,
+  },
+  title: {
+    flex: 1,
+    textAlign: 'center',
+  },
+  profileButton: {
+    margin: 0,
   },
   button: {
     marginVertical: 8,
