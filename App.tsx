@@ -4,6 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { Provider as PaperProvider } from 'react-native-paper';
 import { SignScreen } from './src/screens/SignScreen';
 import { VerifyScreen } from './src/screens/VerifyScreen';
+import { AlertTestScreen } from './src/screens/AlertTestScreen';
 import { enableScreens } from 'react-native-screens';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { CustomModalProvider } from './src/components/CustomModal/CustomModalProvider';
@@ -19,7 +20,7 @@ export default function App() {
         <CustomModalProvider>
           <NavigationContainer>
             <Stack.Navigator 
-              initialRouteName="Sign"
+              initialRouteName="AlertTest"
               screenOptions={{
                 headerStyle: {
                   backgroundColor: '#6200ee',
@@ -30,6 +31,11 @@ export default function App() {
                 },
               }}
             >
+              <Stack.Screen 
+                name="AlertTest" 
+                component={AlertTestScreen}
+                options={{ title: 'Native Alert Test' }}
+              />
               <Stack.Screen 
                 name="Sign" 
                 component={SignScreen}
