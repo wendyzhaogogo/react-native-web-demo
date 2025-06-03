@@ -3,16 +3,7 @@ import { View, StyleSheet, Keyboard, TouchableWithoutFeedback } from 'react-nati
 import { Text, TextInput, Button } from 'react-native-paper';
 import { verifySignature } from '@/utils/crypto';
 import { RouteProp, useRoute } from '@react-navigation/native';
-import type { StackNavigationProp } from '@react-navigation/stack';
-
-type RootStackParamList = {
-  Sign: undefined;
-  Verify: {
-    message: string;
-    publicKey: string;
-    signature: string;
-  };
-};
+import { RootStackParamList } from '../../types/navigation';
 
 type VerifyScreenRouteProp = RouteProp<RootStackParamList, 'Verify'>;
 
@@ -43,7 +34,7 @@ export const VerifyScreen = () => {
           multiline
           numberOfLines={4}
           style={styles.input}
-          blurOnSubmit={true}
+          submitBehavior="blurAndSubmit"
           returnKeyType="done"
         />
 

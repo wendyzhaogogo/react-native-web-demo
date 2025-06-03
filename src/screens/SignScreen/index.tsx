@@ -4,22 +4,11 @@ import { Text, TextInput, Button, IconButton } from 'react-native-paper';
 import { generateKeyPair, hashMessage, signMessage } from '@/utils/crypto';
 import { useNavigation } from '@react-navigation/native';
 import type { StackNavigationProp } from '@react-navigation/stack';
-import { CustomModal } from '../components/CustomModal';
-
-type RootStackParamList = {
-  Sign: undefined;
-  Verify: {
-    message: string;
-    publicKey: string;
-    signature: string;
-  };
-  Profile: undefined;
-};
-
-type NavigationProp = StackNavigationProp<RootStackParamList, 'Sign'>;
+import { CustomModal } from '../../components/CustomModal';
+import { RootStackParamList } from '@/types/navigation';
 
 export const SignScreen = () => {
-  const navigation = useNavigation<NavigationProp>();
+  const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
   const [message, setMessage] = useState('');
   const [hash, setHash] = useState('');
   const [signature, setSignature] = useState('');
