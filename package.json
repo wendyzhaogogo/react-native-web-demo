@@ -3,11 +3,11 @@
   "version": "1.0.0",
   "main": "index.ts",
   "scripts": {
-    "start": "expo start",
-    "android": "expo start --android",
-    "ios": "expo start --ios",
-    "web": "expo start --web",
-    "build:web": "expo export --platform web"
+    "start": "npx expo start -c",
+    "android": "npx expo start --android",
+    "ios": "npx expo start --ios",
+    "web": "npx expo start --web",
+    "build:web": "npx expo export --platform web"
   },
   "dependencies": {
     "@expo/metro-runtime": "~5.0.4",
@@ -29,7 +29,7 @@
     "react-native": "0.79.2",
     "react-native-gesture-handler": "^2.25.0",
     "react-native-paper": "^5.14.5",
-    "react-native-reanimated": "3.16.2",
+    "react-native-reanimated": "3.17.4",
     "react-native-safe-area-context": "^5.4.1",
     "react-native-screens": "^4.11.1",
     "react-native-web": "^0.20.0",

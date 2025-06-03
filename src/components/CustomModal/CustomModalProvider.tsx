@@ -1,6 +1,5 @@
-import React, { createContext, useContext, useRef, useEffect, useState, useCallback, useMemo } from 'react';
-import { Animated } from 'react-native';
-import { useNavigation } from '@react-navigation/native';
+import React, { createContext, useContext, useRef } from 'react';
+import Animated, { useSharedValue, useAnimatedStyle, withTiming } from 'react-native-reanimated';
 import { useMemoizedFn } from 'ahooks';
 
 interface CustomModalContextType {
@@ -11,24 +10,14 @@ interface CustomModalContextType {
 const CustomModalContext = createContext<CustomModalContextType | undefined>(undefined);
 
 export const CustomModalProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const triggerScale = (scale: number) => {
-    Animated.timing(scaleAnim, {
-      toValue: scale,
-      duration: 300,
-      useNativeDriver: true,
-    }).start();
-  };
-
- const modalMap = useRef<Map<string, string>>(new Map()).current;
+  const scale = useSharedValue(1);
+  const modalMap = useRef<Map<string, string>>(new Map()).current;
 
   const refreshScale = useMemoizedFn(() => {
-    if(modalMap.size > 0) {
-      console.log('modalMap.size', modalMap.size,"triggerScale(0.9);");
-      triggerScale(0.9);
+    if (modalMap.size > 0) {
+      scale.value = withTiming(0.9, { duration: 300 });
     } else {
-      console.log('modalMap.size', modalMap.size,"triggerScale(1);");
-      triggerScale(1);
+      scale.value = withTiming(1, { duration: 300 });
     }
   });
 
@@ -42,9 +31,14 @@ export const CustomModalProvider: React.FC<{ children: React.ReactNode }> = ({ c
     refreshScale();
   });
 
+  const animatedStyle = useAnimatedStyle(() => ({
+    flex: 1,
+    transform: [{ scale: scale.value }],
+  }));
+
   return (
     <CustomModalContext.Provider value={{ registerModal, unregisterModal }}>
-      <Animated.View style={{ flex: 1, transform: [{ scale: scaleAnim }] }}>
+      <Animated.View style={animatedStyle}>
         {children}
       </Animated.View>
     </CustomModalContext.Provider>

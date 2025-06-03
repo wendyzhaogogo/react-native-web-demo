@@ -1,11 +1,17 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
-  Animated,
   Dimensions,
   StyleSheet,
   View,
   TouchableWithoutFeedback,
 } from "react-native";
+import Animated, {
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSpring,
+  runOnJS,
+} from "react-native-reanimated";
 import { useCustomModalContext } from "./CustomModalProvider";
 import { Portal } from "react-native-paper";
 
@@ -24,63 +30,42 @@ export const CustomModal: React.FC<CustomModalProps> = ({
   children,
 }) => {
   const [shouldRender, setShouldRender] = useState(false);
-  const scaleAnim = useRef(new Animated.Value(1)).current;
-  const overlayAnim = useRef(new Animated.Value(0)).current;
-  const modalAnim = useRef(new Animated.Value(height)).current;
+  const overlayAnim = useSharedValue(0);
+  const modalAnim = useSharedValue(height);
 
   const { registerModal, unregisterModal } = useCustomModalContext();
   const id = useRef(Math.random().toString(36).substring(2, 15)).current;
-  useEffect(() => {
-    if (visible) {
-      registerModal(id);
-      return () => {
-        unregisterModal(id);
-      };
-    }
-  }, [visible]);
 
   useEffect(() => {
     if (visible) {
+      registerModal(id);
       setShouldRender(true);
-      Animated.parallel([
-        Animated.timing(scaleAnim, {
-          toValue: 0.93,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(overlayAnim, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(modalAnim, {
-          toValue: height - MODAL_HEIGHT,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-      ]).start();
+      overlayAnim.value = withTiming(1, { duration: 300 });
+      modalAnim.value = withSpring(height - MODAL_HEIGHT, {
+        damping: 20,
+        stiffness: 90,
+      });
+      return () => {
+        unregisterModal(id);
+      };
     } else {
-      Animated.parallel([
-        Animated.timing(scaleAnim, {
-          toValue: 1,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(overlayAnim, {
-          toValue: 0,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-        Animated.timing(modalAnim, {
-          toValue: height,
-          duration: 300,
-          useNativeDriver: true,
-        }),
-      ]).start(() => {
-        setShouldRender(false);
+      overlayAnim.value = withTiming(0, { duration: 300 });
+      modalAnim.value = withSpring(height, {
+        damping: 20,
+        stiffness: 90,
+      }, () => {
+        runOnJS(setShouldRender)(false);
       });
     }
   }, [visible]);
+
+  const overlayStyle = useAnimatedStyle(() => ({
+    opacity: overlayAnim.value,
+  }));
+
+  const modalStyle = useAnimatedStyle(() => ({
+    transform: [{ translateY: modalAnim.value }],
+  }));
 
   if (!shouldRender) return null;
 
@@ -89,16 +74,14 @@ export const CustomModal: React.FC<CustomModalProps> = ({
       <View style={StyleSheet.absoluteFill} pointerEvents="box-none">
         {/* 遮罩 */}
         <TouchableWithoutFeedback onPress={onClose}>
-          <Animated.View style={[styles.overlay, { opacity: overlayAnim }]} />
+          <Animated.View style={[styles.overlay, overlayStyle]} />
         </TouchableWithoutFeedback>
         {/* Modal 内容 */}
         <Animated.View
           style={[
             styles.modal,
-            {
-              height: MODAL_HEIGHT,
-              transform: [{ translateY: modalAnim }],
-            },
+            { height: MODAL_HEIGHT },
+            modalStyle,
           ]}
         >
           {children}
